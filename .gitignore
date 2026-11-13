@@ -1,0 +1,17 @@
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Python bytecode & cache
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Task logs & temporary run outputs
+*.log

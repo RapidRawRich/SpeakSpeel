@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="casing" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0382d"/>
+      <stop offset="40%" stop-color="#c92c22"/>
+      <stop offset="100%" stop-color="#8c1b14"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Outer Casing -->
+  <rect x="5" y="15" width="90" height="80" rx="14" fill="url(#casing)" stroke="#5c0f0a" stroke-width="3"/>
+
+  <!-- Top Handle -->
+  <path d="M 28 15 Q 50 2 72 15" fill="none" stroke="#c92c22" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 36 15 Q 50 6 64 15" fill="none" stroke="#f8b417" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- VFD Bezel & Window -->
+  <rect x="15" y="24" width="70" height="22" rx="4" fill="#111413" stroke="#08110e" stroke-width="1.5"/>
+  <rect x="18" y="26" width="64" height="18" rx="2" fill="#091a16"/>
+
+  <!-- 14-Segment Phosphor Letters "SPELL" -->
+  <g filter="url(#glow)">
+    <text x="21" y="40" font-family="'Courier New', monospace" font-size="13" font-weight="900" fill="#2bffcd" letter-spacing="1">SPELL</text>
+  </g>
+
+  <!-- Keypad Area -->
+  <rect x="15" y="52" width="70" height="38" rx="4" fill="#141716" stroke="#0d0f0e" stroke-width="1.5"/>
+
+  <!-- 40 Membrane Buttons Preview -->
+  <g fill="#f3ebda">
+    <rect x="19" y="56" width="8" height="5" rx="1"/>
+    <rect x="30" y="56" width="8" height="5" rx="1"/>
+    <rect x="41" y="56" width="8" height="5" rx="1"/>
+    <rect x="52" y="56" width="8" height="5" rx="1"/>
+    <rect x="63" y="56" width="8" height="5" rx="1"/>
+    <rect x="74" y="56" width="8" height="5" rx="1"/>
+
+    <rect x="19" y="64" width="8" height="5" rx="1"/>
+    <rect x="30" y="64" width="8" height="5" rx="1"/>
+    <rect x="41" y="64" width="8" height="5" rx="1"/>
+    <rect x="52" y="64" width="8" height="5" rx="1"/>
+    <rect x="63" y="64" width="8" height="5" rx="1"/>
+    <rect x="74" y="64" width="8" height="5" rx="1"/>
+
+    <rect x="19" y="72" width="8" height="5" rx="1"/>
+    <rect x="30" y="72" width="8" height="5" rx="1"/>
+    <rect x="41" y="72" width="8" height="5" rx="1"/>
+    <rect x="52" y="72" width="8" height="5" rx="1"/>
+    <rect x="63" y="72" width="8" height="5" rx="1"/>
+    <rect x="74" y="72" width="8" height="5" rx="1"/>
+
+    <rect x="19" y="80" width="12" height="6" rx="1" fill="#e37d2b"/>
+    <rect x="34" y="80" width="12" height="6" rx="1" fill="#2da877"/>
+    <rect x="49" y="80" width="14" height="6" rx="1" fill="#3b74b8"/>
+    <rect x="66" y="80" width="16" height="6" rx="1" fill="#f8b417"/>
+  </g>
+</svg>

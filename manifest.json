@@ -1,0 +1,18 @@
+{
+  "name": "Texas Instruments Speak & Spell (1978)",
+  "short_name": "Speak&Spell",
+  "description": "Authentic 1978 Texas Instruments Speak & Spell emulation with 14-segment VFD, TMS5100 LPC speech, and circuit bending.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#111317",
+  "theme_color": "#c92c22",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "speak-spell-retro",
+  "displayName": "Texas Instruments Speak & Spell (1978)",
+  "description": "Authentic emulation of the 1978 Texas Instruments Speak & Spell with 14-segment VFD, TMS5100 LPC speech synthesis, circuit bending, and all 5 original game modes.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Antigravity Engineering"
+  },
+  "keywords": [
+    "speak-and-spell",
+    "retro-computing",
+    "tms5100",
+    "speech-synthesis",
+    "lpc-10",
+    "14-segment-vfd",
+    "texas-instruments",
+    "circuit-bending"
+  ],
+  "suggestedPrompts": [
+    "Start the Speak & Spell web emulator",
+    "Run unit tests on the Speak & Spell game engine",
+    "Explain the TMS5100 LPC speech synthesis architecture",
+    "Add a new word cartridge to Speak & Spell"
+  ]
+}
