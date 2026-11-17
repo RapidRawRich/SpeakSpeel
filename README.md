@@ -12,9 +12,10 @@ An authentic, production-grade emulation of the iconic **1978 Texas Instruments 
   * Full 8-character Futaba/TI tube simulation with signature turquoise phosphor bloom (`#2bffcd`), glass raster scanlines, and faint unlit filament traces.
   * Complete 14-segment alphanumeric character font for all letters A–Z, numbers 0–9, and punctuation.
 * **TMS5100 / TMC0280 LPC-10 Speech Chip Emulation**:
-  * Triple-biquad formant lattice filter simulating vocal tract resonance peaks ($F_1 \approx 750\text{ Hz}$, $F_2 \approx 1450\text{ Hz}$, $3.8\text{ kHz}$ low-pass cut-off).
-  * 8 kHz 6-bit quantization sound effect with robotic cadence.
-  * Procedural square-wave victory fanfare arpeggios, dual discordant wrong-answer buzzer, and mechanical membrane key clicks.
+  * **Authentic 1978 Voice (Mitch Carr - YouTube: [GbNuL4y-2eU](https://youtu.be/GbNuL4y-2eU))**: Direct procedural Web Audio impulse-train excitation ($F_0 \approx 125\text{ Hz}$) passing through a triple biquad lattice formant filter bank, matching the exact robotic vocal resonance of the vintage hardware.
+  * **⚡ Cursed / Glitched Demonic Voice ("Totally Wrong Voice")**: Circuit-bent broken synthesizer mode featuring ultra-low $0.15\times$ pitch gargling, non-linear WaveShaper distortion, and detuned tritone alarms.
+  * **System TTS Fallback**: Clean browser speech synthesis option.
+  * Toggle between voice engines anytime via the **`VOICE SYNTH`** selector.
 * **All 5 Original Game Modes**:
   1. **SPELL**: 10-word quiz round with attempt tracking (1st try = 1 pt, 2nd try = 0.5 pt), "That is correct", "Wrong, try again", spelling reveals, and end-of-round fanfare scoring.
   2. **MYSTERY WORD**: Hangman-style word guessing with blanks, strikes counter (up to 6 misses), and segment reveals.

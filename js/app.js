@@ -10,6 +10,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const bendDisplay = document.getElementById("bend-display");
   const volSlider = document.getElementById("volume-slider");
   const volDisplay = document.getElementById("vol-display");
+  const voiceSelect = document.getElementById("voice-engine-select");
+  const voiceDisplay = document.getElementById("voice-display");
   const roastToggleBtn = document.getElementById("roast-toggle-btn");
   const roastIndicator = document.getElementById("roast-indicator");
   const cursedToggleBtn = document.getElementById("cursed-toggle-btn");
@@ -93,6 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
         cursedToggleBtn.textContent = "⚡ CURSED VOICE";
       }
     }
+    if (voiceSelect) {
+      voiceSelect.value = audio.voiceMode;
+    }
+    if (voiceDisplay) {
+      voiceDisplay.textContent = audio.voiceMode === "LPC_1978" ? "1978 TMS5100" : (audio.voiceMode === "CURSED" ? "CURSED WRONG" : "SYSTEM TTS");
+    }
   }
 
   // Hook into engine cycleLevel to sync badge
@@ -120,6 +128,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (cursedToggleBtn) {
     cursedToggleBtn.addEventListener("click", () => {
       audio.toggleCursedVoice();
+      updateCursedUI();
+    });
+  }
+
+  if (voiceSelect) {
+    voiceSelect.addEventListener("change", (e) => {
+      audio.setVoiceMode(e.target.value);
       updateCursedUI();
     });
   }

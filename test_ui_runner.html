@@ -59,6 +59,7 @@
         assert(doc.querySelectorAll(".key").length === 40, "Keypad contains exactly 40 buttons");
         assert(doc.getElementById("roast-toggle-btn") !== null, "Roast toggle button exists in DOM");
         assert(doc.getElementById("cursed-toggle-btn") !== null, "Cursed voice button exists in DOM");
+        assert(doc.getElementById("voice-engine-select") !== null, "Voice engine selector exists in DOM");
 
         // Test 2: Power On
         const onBtn = doc.querySelector('.key[data-key="ON"]');
@@ -110,6 +111,12 @@
         assert(win.speakSpell.audio.isCursedVoice === false, "Cursed voice successfully toggled off");
         cursedBtn.click(); // Toggle back on
         assert(win.speakSpell.audio.isCursedVoice === true, "Cursed voice successfully re-engaged");
+
+        // Test 7b: Voice engine selector
+        const voiceSel = doc.getElementById("voice-engine-select");
+        voiceSel.value = "LPC_1978";
+        voiceSel.dispatchEvent(new Event("change", { bubbles: true }));
+        assert(win.speakSpell.audio.voiceMode === "LPC_1978", "Voice set to authentic 1978 TMS5100 LPC (Mitch Carr)");
 
         // Test 8: Mode switching: MYSTERY WORD
         const mysteryBtn = doc.querySelector('.key[data-key="MYSTERY"]');

@@ -498,6 +498,24 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
+/* Voice Selector Dropdown */
+.voice-select {
+  background: #111413;
+  color: #2bffcd;
+  border: 1px solid #33443e;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 10px;
+  font-family: var(--font-retro);
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+}
+
+.voice-select:focus {
+  border-color: var(--ti-yellow);
+}
+
 /* Roast Switch Toggle Button */
 .roast-status {
   font-weight: 800;
