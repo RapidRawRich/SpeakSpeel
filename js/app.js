@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const volDisplay = document.getElementById("vol-display");
   const roastToggleBtn = document.getElementById("roast-toggle-btn");
   const roastIndicator = document.getElementById("roast-indicator");
+  const cursedToggleBtn = document.getElementById("cursed-toggle-btn");
+  const cursedIndicator = document.getElementById("cursed-indicator");
 
   // Level Badges
   const levelBadges = {
@@ -68,6 +70,29 @@ document.addEventListener("DOMContentLoaded", () => {
         roastKey.classList.remove("active-roast");
       }
     }
+    updateCursedUI();
+  }
+
+  // Sync Cursed Voice UI
+  function updateCursedUI() {
+    const isCursed = audio.isCursedVoice;
+    if (cursedIndicator) {
+      cursedIndicator.textContent = isCursed ? "ACTIVE" : "OFF";
+      if (isCursed) {
+        cursedIndicator.classList.add("on");
+      } else {
+        cursedIndicator.classList.remove("on");
+      }
+    }
+    if (cursedToggleBtn) {
+      if (isCursed) {
+        cursedToggleBtn.classList.add("active");
+        cursedToggleBtn.textContent = "⚡ CURSED ACTIVE";
+      } else {
+        cursedToggleBtn.classList.remove("active");
+        cursedToggleBtn.textContent = "⚡ CURSED VOICE";
+      }
+    }
   }
 
   // Hook into engine cycleLevel to sync badge
@@ -89,6 +114,13 @@ document.addEventListener("DOMContentLoaded", () => {
   if (roastToggleBtn) {
     roastToggleBtn.addEventListener("click", () => {
       engine.toggleRoastMode();
+    });
+  }
+
+  if (cursedToggleBtn) {
+    cursedToggleBtn.addEventListener("click", () => {
+      audio.toggleCursedVoice();
+      updateCursedUI();
     });
   }
 

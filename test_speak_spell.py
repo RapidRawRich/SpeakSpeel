@@ -129,7 +129,9 @@ class TestWebAssetsAndMarkup(unittest.TestCase):
             "js/app.js",
             ".nojekyll",
             "manifest.json",
-            "assets/icon.svg"
+            "assets/icon.svg",
+            "test_ui_runner.html",
+            "test_ui_chrome.py"
         ]
         for f in expected_files:
             p = os.path.join(BASE_DIR, f)

@@ -79,13 +79,16 @@ class SpeakSpellEngine {
    * Toggle Roast / Offensive Mode
    */
   toggleRoastMode() {
-    if (!this.isPowerOn || this.isBusy) return;
+    if (!this.isPowerOn) return;
+    this.audio.stopAll();
+    this.isBusy = false;
     this.isRoastMode = !this.isRoastMode;
+    this.audio.toggleCursedVoice(this.isRoastMode);
     this.audio.playKeyClick();
 
     if (this.isRoastMode) {
       this.display.render("ROAST ON", -1);
-      this.audio.speak("ROAST MODE ACTIVATED. PREPARE FOR TRUTH.").then(() => {
+      this.audio.speak(this.words.ROAST_PHRASES.BOOT).then(() => {
         this.setMode(this.currentMode);
       });
     } else {
@@ -100,7 +103,9 @@ class SpeakSpellEngine {
    * Difficulty Group / Cartridge Selection
    */
   cycleLevel() {
-    if (!this.isPowerOn || this.isBusy) return;
+    if (!this.isPowerOn) return;
+    this.audio.stopAll();
+    this.isBusy = false;
     const levels = ["A", "B", "C", "D", "R"];
     const currIdx = levels.indexOf(this.currentLevel);
     this.currentLevel = levels[(currIdx + 1) % levels.length];
@@ -118,11 +123,12 @@ class SpeakSpellEngine {
    * Mode Selection
    */
   setMode(mode) {
-    if (!this.isPowerOn || this.isBusy) return;
+    if (!this.isPowerOn) return;
+    this.audio.stopAll();
+    this.isBusy = false;
     this.currentMode = mode;
     this.inputBuffer = "";
     this.audio.playKeyClick();
-    this.audio.stopAll();
 
     switch (mode) {
       case "SPELL":
@@ -537,15 +543,24 @@ class SpeakSpellEngine {
   }
 
   handleLetter(letter) {
-    if (this.isBusy) return;
-
     if (this.currentMode === "SPELL") {
+      // If voice is currently speaking prompt, typing interrupts it
+      if (this.audio.isSpeaking) {
+        this.audio.stopAll();
+        this.isBusy = false;
+      }
+      if (this.isBusy) return;
+
       this.audio.playKeyClick();
       if (this.inputBuffer.length < 8) {
         this.inputBuffer += letter;
         this.display.render(this.inputBuffer, this.inputBuffer.length);
       }
     } else if (this.currentMode === "MYSTERY") {
+      if (this.audio.isSpeaking) {
+        this.audio.stopAll();
+        this.isBusy = false;
+      }
       this.handleMysteryLetter(letter);
     } else if (this.currentMode === "SECRET_CODE") {
       this.handleSecretCodeInput(letter);
@@ -555,6 +570,10 @@ class SpeakSpellEngine {
   }
 
   handleErase() {
+    if (this.audio.isSpeaking) {
+      this.audio.stopAll();
+      this.isBusy = false;
+    }
     if (this.isBusy) return;
     this.audio.playKeyClick();
 

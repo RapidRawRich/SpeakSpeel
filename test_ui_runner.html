@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Speak & Spell Automated UI Test Runner</title>
+  <style>
+    body { font-family: monospace; background: #111; color: #eee; padding: 20px; }
+    .pass { color: #4ade80; }
+    .fail { color: #f87171; font-weight: bold; }
+    #test-log { white-space: pre-wrap; margin-top: 15px; border: 1px solid #333; padding: 15px; background: #1a1a1a; }
+  </style>
+</head>
+<body>
+  <h1>Speak &amp; Spell Headless UI &amp; DOM Test Suite</h1>
+  <div id="summary">Running tests...</div>
+  <div id="test-log"></div>
+
+  <!-- Embedded test harness running the actual application in an iframe -->
+  <iframe id="app-frame" src="index.html" style="width: 600px; height: 900px; border: 2px solid #444; margin-top: 20px;"></iframe>
+
+  <script>
+    const logEl = document.getElementById("test-log");
+    const summaryEl = document.getElementById("summary");
+    const results = [];
+
+    function log(msg, status = "info") {
+      const line = `[${new Date().toISOString().substring(11, 23)}] ${status.toUpperCase()}: ${msg}`;
+      const div = document.createElement("div");
+      div.className = status;
+      div.textContent = line;
+      logEl.appendChild(div);
+      console.log(line);
+    }
+
+    function assert(condition, testName) {
+      if (condition) {
+        log(`✓ PASS: ${testName}`, "pass");
+        results.push({ name: testName, pass: true });
+      } else {
+        log(`✗ FAIL: ${testName}`, "fail");
+        results.push({ name: testName, pass: false });
+      }
+    }
+
+    const frame = document.getElementById("app-frame");
+
+    frame.onload = async () => {
+      log("IFrame loaded. Initializing automated UI assertions...");
+      const doc = frame.contentDocument;
+      const win = frame.contentWindow;
+      win.IS_TEST_ENV = true;
+
+      try {
+        // Wait for DOMContentLoaded inside iframe
+        await new Promise(r => setTimeout(r, 600));
+
+        // Test 1: Initial state check
+        assert(doc.getElementById("vfd-container") !== null, "VFD Display container exists");
+        assert(doc.querySelectorAll(".key").length === 40, "Keypad contains exactly 40 buttons");
+        assert(doc.getElementById("roast-toggle-btn") !== null, "Roast toggle button exists in DOM");
+        assert(doc.getElementById("cursed-toggle-btn") !== null, "Cursed voice button exists in DOM");
+
+        // Test 2: Power On
+        const onBtn = doc.querySelector('.key[data-key="ON"]');
+        assert(onBtn !== null, "ON button located");
+        onBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        onBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        // Wait for 400ms boot flash animation to complete
+        await new Promise(r => setTimeout(r, 650));
+        assert(win.speakSpell.engine.isPowerOn === true, "Engine power state is ON");
+
+        // Test 3: VFD 14-Segment Rendering verification
+        const litSegments = doc.querySelectorAll(".vfd-seg.lit");
+        log(`Lit VFD segments detected: ${litSegments.length}`);
+        assert(litSegments.length > 0, "14-Segment VFD is actively illuminating characters");
+
+        // Test 4: Keyboard & Membrane letter input (C, A, T)
+        const cBtn = doc.querySelector('.key[data-key="C"]');
+        const aBtn = doc.querySelector('.key[data-key="A"]');
+        const tBtn = doc.querySelector('.key[data-key="T"]');
+
+        cBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        cBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        aBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        aBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        tBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        tBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 100));
+        assert(win.speakSpell.engine.inputBuffer === "CAT", "Key inputs 'CAT' registered in buffer");
+
+        // Test 5: Erase key
+        const eraseBtn = doc.querySelector('.key[data-key="ERASE"]');
+        eraseBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        eraseBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 80));
+        assert(win.speakSpell.engine.inputBuffer === "CA", "ERASE button backspaced buffer to 'CA'");
+
+        // Test 6: Roast Mode Toggle
+        const roastBtn = doc.getElementById("roast-toggle-btn");
+        roastBtn.click();
+        await new Promise(r => setTimeout(r, 200));
+        assert(win.speakSpell.engine.isRoastMode === true, "Roast Mode successfully activated");
+        assert(win.speakSpell.audio.isCursedVoice === true, "Cursed voice automatically engaged in Roast Mode");
+        assert(doc.getElementById("roast-indicator").textContent === "ACTIVE", "Roast status indicator shows ACTIVE");
+
+        // Test 7: Cursed Voice toggle
+        const cursedBtn = doc.getElementById("cursed-toggle-btn");
+        assert(cursedBtn !== null, "Cursed voice toggle button found");
+        cursedBtn.click(); // Toggle off
+        assert(win.speakSpell.audio.isCursedVoice === false, "Cursed voice successfully toggled off");
+        cursedBtn.click(); // Toggle back on
+        assert(win.speakSpell.audio.isCursedVoice === true, "Cursed voice successfully re-engaged");
+
+        // Test 8: Mode switching: MYSTERY WORD
+        const mysteryBtn = doc.querySelector('.key[data-key="MYSTERY"]');
+        mysteryBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        mysteryBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 150));
+        assert(win.speakSpell.engine.currentMode === "MYSTERY", "Switched to MYSTERY WORD mode");
+
+        // Test 9: Mode switching: SECRET CODE
+        const codeBtn = doc.querySelector('.key[data-key="SECRET_CODE"]');
+        codeBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        codeBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 150));
+        assert(win.speakSpell.engine.currentMode === "SECRET_CODE", "Switched to SECRET CODE mode");
+
+        // Test 10: Mode switching: LETTER mode
+        const letterBtn = doc.querySelector('.key[data-key="LETTER"]');
+        letterBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        letterBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 150));
+        assert(win.speakSpell.engine.currentMode === "LETTER", "Switched to LETTER mode");
+
+        // Test 11: Level module cycling including Roast R
+        const levelBtn = doc.querySelector('.key[data-key="LEVEL"]');
+        const levelsTraversed = [];
+        for (let i = 0; i < 5; i++) {
+          levelsTraversed.push(win.speakSpell.engine.currentLevel);
+          levelBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+          levelBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+          await new Promise(r => setTimeout(r, 100));
+        }
+        log(`Levels traversed: ${levelsTraversed.join(" -> ")}`);
+        assert(levelsTraversed.includes("R"), "Difficulty cycle includes Roast Level R");
+
+        // Test 12: Circuit Bending pitch slider
+        const slider = doc.getElementById("bend-slider");
+        slider.value = 0.5;
+        slider.dispatchEvent(new Event("input", { bubbles: true }));
+        assert(win.speakSpell.audio.pitchRate === 0.5, "Pitch bend slider updated audio pitch rate to 0.5x");
+
+        // Final Summary
+        const passedCount = results.filter(r => r.pass).length;
+        const totalCount = results.length;
+        const allPass = passedCount === totalCount;
+
+        summaryEl.innerHTML = `<strong>Results: ${passedCount} / ${totalCount} PASSED</strong>`;
+        summaryEl.className = allPass ? "pass" : "fail";
+        log(`=== TEST SUMMARY: ${passedCount}/${totalCount} TESTS PASSED ===`, allPass ? "pass" : "fail");
+
+        window.TEST_COMPLETED = true;
+        window.TEST_ALL_PASSED = allPass;
+
+      } catch (err) {
+        log(`Fatal UI Test Error: ${err.message}`, "fail");
+        console.error(err);
+        window.TEST_COMPLETED = true;
+        window.TEST_ALL_PASSED = false;
+      }
+    };
+  </script>
+</body>
+</html>
