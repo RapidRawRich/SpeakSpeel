@@ -154,5 +154,43 @@ class TestWebAssetsAndMarkup(unittest.TestCase):
         self.assertIn('id="roast-toggle-btn"', html)
         self.assertIn('id="roast-indicator"', html)
 
+class TestAuthenticTMS5100Audio(unittest.TestCase):
+    def setUp(self):
+        self.audio_dir = os.path.join(BASE_DIR, "assets", "audio")
+        self.synth_file = os.path.join(BASE_DIR, "js", "synth.js")
+        with open(self.synth_file, "r", encoding="utf-8") as f:
+            self.synth_code = f.read()
+
+    def test_audio_directory_and_key_samples_exist(self):
+        self.assertTrue(os.path.isdir(self.audio_dir), "assets/audio directory must exist")
+        # All 26 letters must exist
+        for ch in "abcdefghijklmnopqrstuvwxyz":
+            letter_mp3 = os.path.join(self.audio_dir, f"{ch}.mp3")
+            self.assertTrue(os.path.isfile(letter_mp3), f"Missing authentic letter audio: {ch}.mp3")
+        # Key system speech prompts
+        for prompt in ["spell.mp3", "correct.mp3", "incorrect.mp3", "say.mp3"]:
+            prompt_mp3 = os.path.join(self.audio_dir, prompt)
+            self.assertTrue(os.path.isfile(prompt_mp3), f"Missing authentic prompt audio: {prompt}")
+
+    def test_vocabulary_group_words_have_authentic_audio(self):
+        words_file = os.path.join(BASE_DIR, "js", "words.js")
+        with open(words_file, "r", encoding="utf-8") as f:
+            content = f.read()
+        import re
+        for group in ["A", "B", "C", "D"]:
+            m = re.search(r'' + group + r':\s*\[(.*?)\]', content, re.DOTALL)
+            self.assertIsNotNone(m, f"Could not find Group {group}")
+            words = [w.strip(' \t\n\r"\'') for w in m.group(1).split(',') if w.strip(' \t\n\r"\'')]
+            for word in words:
+                word_mp3 = os.path.join(self.audio_dir, f"{word.lower()}.mp3")
+                self.assertTrue(os.path.isfile(word_mp3), f"Group {group} word {word} lacks authentic MP3 at {word_mp3}")
+
+    def test_synth_has_authentic_tms5100_dispatchers(self):
+        self.assertIn("AUTHENTIC_SAMPLES", self.synth_code)
+        self.assertIn("speakAuthenticTMS5100", self.synth_code)
+        self.assertIn("loadSample", self.synth_code)
+        self.assertIn("playSample", self.synth_code)
+        self.assertIn("isCursedVoice", self.synth_code)
+
 if __name__ == "__main__":
     unittest.main()

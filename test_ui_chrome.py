@@ -34,6 +34,7 @@ def run_headless_ui_tests():
         "--headless=new",
         "--disable-gpu",
         "--no-sandbox",
+        "--user-data-dir=/tmp/chrome_test_profile",
         "--allow-file-access-from-files",
         "--virtual-time-budget=6000",
         f"--screenshot={NORMAL_SCREENSHOT}",

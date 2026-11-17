@@ -117,6 +117,8 @@
         voiceSel.value = "LPC_1978";
         voiceSel.dispatchEvent(new Event("change", { bubbles: true }));
         assert(win.speakSpell.audio.voiceMode === "LPC_1978", "Voice set to authentic 1978 TMS5100 LPC (Mitch Carr)");
+        assert(win.speakSpell.audio.AUTHENTIC_SAMPLES && win.speakSpell.audio.AUTHENTIC_SAMPLES.size > 150, "TMS5100 hardware voice sample bank loaded with 150+ authentic clips");
+        assert(typeof win.speakSpell.audio.speakAuthenticTMS5100 === "function", "Authentic 1978 TMS5100 speech synthesis dispatcher is active");
 
         // Test 8: Mode switching: MYSTERY WORD
         const mysteryBtn = doc.querySelector('.key[data-key="MYSTERY"]');

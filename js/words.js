@@ -6,40 +6,40 @@
  */
 
 const SPEAK_SPELL_WORDS = {
-  // Group A: Foundational 3-4 letter words (Level 1)
+  // Group A: Foundational words with authentic 1978 Mitch Carr TMS5100 audio (Level 1)
   A: [
-    "BALL", "BIRD", "BOAT", "BOOK", "CAKE", "COLD", "DARK", "DOOR", 
-    "DUCK", "FAST", "FISH", "FROG", "GAME", "GOLD", "HAND", "HILL", 
-    "HOME", "JUMP", "KING", "LAKE", "LAMP", "LION", "MOON", "NEST", 
-    "PARK", "RAIN", "RING", "ROAD", "ROSE", "SAND", "SHIP", "SNOW", 
-    "STAR", "TIME", "TREE", "WALK", "WIND", "WING", "WOLF", "YARD"
+    "CALF", "DOES", "ECHO", "HALF", "IRON", "ONCE", "OVEN", "PINT", 
+    "PULL", "SURE", "SWAP", "TALK", "VIEW", "WARM", "WASH", "WORD", 
+    "YARN", "ABOVE", "ANGEL", "BEIGE", "BLOOD", "BUILT", "CARRY", "CHALK", 
+    "CHILD", "EARLY", "EARTH", "EXTRA", "FLOOD", "FLOOR", "FRONT", "GUESS", 
+    "GUIDE", "HASTE", "HEAVY", "LEARN", "OCEAN", "QUIET", "WATER", "WATCH"
   ],
 
-  // Group B: Intermediate 5-letter words (Level 2)
+  // Group B: Intermediate words with authentic 1978 Mitch Carr TMS5100 audio (Level 2)
   B: [
-    "APPLE", "BEACH", "BRAIN", "BREAD", "CHAIR", "CLOCK", "CLOUD", "CANDY",
-    "DANCE", "DREAM", "EARTH", "FIELD", "FLAME", "FRUIT", "GHOST", "GRASS",
-    "GREEN", "HEART", "HORSE", "HOUSE", "LIGHT", "MAGIC", "MONEY", "MUSIC",
-    "NIGHT", "OCEAN", "PEACH", "PLANT", "QUEEN", "RIVER", "ROBOT", "SCALE",
-    "SMILE", "SNAKE", "SPACE", "STONE", "TIGER", "TRAIN", "WATER", "WHITE"
+    "ANSWER", "BEAUTY", "BULLET", "BUREAU", "BUSHEL", "COMING", "COUPLE", "COUSIN",
+    "DANGER", "ENOUGH", "FINGER", "HEALTH", "HEAVEN", "LINGER", "MINUTE", "MIRROR",
+    "MOTHER", "PERIOD", "PIERCE", "PLAGUE", "POLICE", "PRIEST", "RANGER", "RELIEF",
+    "REMOVE", "RHYTHM", "SCHOOL", "SEARCH", "SHIELD", "SHOULD", "SHOVEL", "SOURCE",
+    "STATUE", "TERROR", "WOLVES", "WONDER", "READY", "RURAL", "SUGAR", "TOUCH"
   ],
 
-  // Group C: Advanced 6-letter words (Level 3)
+  // Group C: Advanced words with authentic 1978 Mitch Carr TMS5100 audio (Level 3)
   C: [
-    "BRIDGE", "CASTLE", "CIRCUS", "DOCTOR", "DRAGON", "FOREST", "FRIEND", "GARDEN",
-    "ISLAND", "JUNGLE", "KNIGHT", "LADDER", "LIZARD", "MONKEY", "MIRROR", "ORANGE",
-    "PENCIL", "PIRATE", "PLANET", "PUPPET", "RABBIT", "ROCKET", "SAILOR", "SHADOW",
-    "SILVER", "SPIDER", "SPRING", "STREAM", "SUMMER", "TEMPLE", "TURTLE", "VALLEY",
-    "WINDOW", "WINTER", "WIZARD", "YELLOW", "ZEBRAS", "GUITAR", "FARMER", "FALCON"
+    "ALREADY", "ANCIENT", "ANOTHER", "BELIEVE", "BROTHER", "BUTCHER", "CARAVAN", "CIRCUIT",
+    "COMFORT", "CORSAGE", "COURAGE", "DUNGEON", "EARNEST", "FEATHER", "FREIGHT", "GREATER",
+    "HEALTHY", "INSTEAD", "JEALOUS", "JOURNEY", "LEISURE", "LETTUCE", "MACHINE", "MEASURE",
+    "OUTDOOR", "PLUNGER", "POULTRY", "PROMISE", "SERIOUS", "SOMEONE", "STOMACH", "SURGEON",
+    "TROUBLE", "WELCOME", "WORKMAN", "ABCESS", "LAUGH", "WOMAN", "WORTH", "YACHT"
   ],
 
-  // Group D: Master 7-8 letter words (Level 4)
+  // Group D: Master 7-8 letter words with authentic 1978 Mitch Carr TMS5100 audio (Level 4)
   D: [
-    "BLANKET", "CHIMNEY", "CRYSTAL", "DIAMOND", "DOLPHIN", "EXPLORE", "FEATHER", "JOURNEY",
-    "KINGDOM", "LANTERN", "MONSTER", "MORNING", "MYSTERY", "OCTOPUS", "PAINTER", "PENGUIN",
-    "PICTURE", "RAINBOW", "SCULPT", "SOLDIER", "SUNSHINE", "THUNDER", "TREASURE", "UNICORN",
-    "VILLAGE", "VOLCANO", "WHISPER", "WINDMILL", "BLOSSOM", "CAPTAIN", "COMPASS", "FIREFLY",
-    "HOLIDAY", "KEYBOARD", "SANDWICH", "TRIANGLE", "UMBRELLA", "VOLLEY", "STARFISH", "ELEPHANT"
+    "ANYTHING", "DISCOVER", "LANGUAGE", "LAUGHTER", "QUOTIENT", "REINDEER", "SCHEDULE", "SCISSORS",
+    "SHOULDER", "STRANGER", "TOMORROW", "TREASURE", "ALREADY", "ANCIENT", "BELIEVE", "BROTHER",
+    "CIRCUIT", "COMFORT", "COURAGE", "DUNGEON", "FEATHER", "FREIGHT", "GREATER", "HEALTHY",
+    "INSTEAD", "JOURNEY", "LEISURE", "LETTUCE", "MACHINE", "MEASURE", "OUTDOOR", "POULTRY",
+    "PROMISE", "SERIOUS", "STOMACH", "SURGEON", "TROUBLE", "WELCOME", "WORKMAN", "YIELD"
   ],
 
   // Group R: Very Offensive / Roast novelty words (max 8 chars)
