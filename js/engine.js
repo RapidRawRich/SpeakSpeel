@@ -177,7 +177,7 @@ class SpeakSpellEngine {
     this.spellCurrentWord = this.spellWordsList[this.spellRound];
     this.spellAttempt = 1;
     this.inputBuffer = "";
-    this.display.render("", 0);
+    this.display.render("_       ", 0);
 
     let promptText;
     if (this.isRoastMode) {
@@ -191,7 +191,8 @@ class SpeakSpellEngine {
     }
 
     await this.audio.speak(promptText);
-    this.display.render("_       ", 0);
+    if (!this.isPowerOn || this.currentMode !== "SPELL") return;
+    this.display.render(this.inputBuffer ? this.inputBuffer : "_       ", this.inputBuffer.length);
     this.isBusy = false;
   }
 
@@ -308,8 +309,9 @@ class SpeakSpellEngine {
     this.inputBuffer = "";
     this.mysteryGuessed = [];
     this.mysteryStrikes = 0;
+    this.mysteryWordFinished = false;
 
-    const pool = this.words[this.currentLevel];
+    const pool = this.words[this.currentLevel] || this.words.A;
     this.mysteryWord = pool[Math.floor(Math.random() * pool.length)];
 
     this.display.render("MYSTERY ", -1);
@@ -341,6 +343,10 @@ class SpeakSpellEngine {
   }
 
   async handleMysteryLetter(letter) {
+    if (this.mysteryWordFinished) {
+      this.startMysteryMode();
+      return;
+    }
     if (this.isBusy) return;
     if (this.mysteryGuessed.includes(letter)) {
       this.audio.playKeyClick();
@@ -355,6 +361,7 @@ class SpeakSpellEngine {
       const isComplete = this.renderMysteryDisplay();
 
       if (isComplete) {
+        this.mysteryWordFinished = true;
         this.display.flash(2, 90);
         await this.audio.playVictoryFanfare();
         const msg = this.isRoastMode
@@ -369,6 +376,7 @@ class SpeakSpellEngine {
       await this.audio.playWrongBuzz();
 
       if (this.mysteryStrikes >= this.mysteryMaxStrikes) {
+        this.mysteryWordFinished = true;
         this.display.render(this.mysteryWord, -1);
         const msg = this.isRoastMode
           ? this.words.ROAST_PHRASES.MYSTERY_LOSE.replace("%s", this.mysteryWord)
@@ -406,14 +414,19 @@ class SpeakSpellEngine {
     this.display.render(this.sayItWord, -1);
     const prefix = this.isRoastMode ? "SAY IT, IF YOU CAN. " : "SAY IT. ";
     await this.audio.speak(`${prefix}${this.sayItWord}`);
+    if (!this.isPowerOn || this.currentMode !== "SAY_IT") return;
 
     // Wait 2.2 seconds to allow player to speak
     await new Promise((res) => setTimeout(res, 2200));
+    if (!this.isPowerOn || this.currentMode !== "SAY_IT") return;
 
     // Pronounce again and spell it out
     await this.audio.speak(this.sayItWord);
+    if (!this.isPowerOn || this.currentMode !== "SAY_IT") return;
     await this.audio.speak(this.sayItWord, { spellOut: true });
+    if (!this.isPowerOn || this.currentMode !== "SAY_IT") return;
     await this.audio.speak(this.sayItWord);
+    if (!this.isPowerOn || this.currentMode !== "SAY_IT") return;
 
     this.isBusy = false;
   }
@@ -536,8 +549,8 @@ class SpeakSpellEngine {
       return;
     }
 
-    // Letter Keys (A through Z and Apostrophe)
-    if (/^[A-Z']$/.test(upperKey)) {
+    // Alphanumeric Keys (A through Z, 0 through 9, and Apostrophe)
+    if (/^[A-Z0-9']$/.test(upperKey)) {
       this.handleLetter(upperKey);
     }
   }
@@ -579,8 +592,13 @@ class SpeakSpellEngine {
 
     if (this.inputBuffer.length > 0) {
       this.inputBuffer = this.inputBuffer.slice(0, -1);
-      const displayStr = this.inputBuffer || "_";
-      this.display.render(displayStr, this.inputBuffer.length);
+      if (this.currentMode === "SECRET_CODE") {
+        const enc = this.words.encodeSecretCode(this.inputBuffer);
+        this.display.render(enc || "CODE    ", enc.length);
+      } else {
+        const displayStr = this.inputBuffer || "_";
+        this.display.render(displayStr, this.inputBuffer.length);
+      }
     }
   }
 

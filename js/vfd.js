@@ -205,7 +205,41 @@ class VFDDisplay {
     this.cursorVisible = false;
   }
 
+  scrollMessage(text, speedMs = 180) {
+    return new Promise((resolve) => {
+      this.stopScrolling();
+      const clean = (text || "").toUpperCase().trim();
+      if (clean.length <= this.charCount) {
+        this.render(clean, -1);
+        resolve();
+        return;
+      }
+
+      const full = clean + "   ";
+      let offset = 0;
+
+      this.scrollInterval = setInterval(() => {
+        const slice = full.substring(offset, offset + this.charCount);
+        this.render(slice, -1);
+        offset++;
+        if (offset > full.length - this.charCount) {
+          clearInterval(this.scrollInterval);
+          this.scrollInterval = null;
+          setTimeout(resolve, 400);
+        }
+      }, speedMs);
+    });
+  }
+
+  stopScrolling() {
+    if (this.scrollInterval) {
+      clearInterval(this.scrollInterval);
+      this.scrollInterval = null;
+    }
+  }
+
   clear() {
+    this.stopScrolling();
     this.text = "".padEnd(this.charCount, " ");
     this.cursorPos = -1;
     this.render(this.text);

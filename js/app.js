@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
       voiceSelect.value = audio.voiceMode;
     }
     if (voiceDisplay) {
-      voiceDisplay.textContent = audio.voiceMode === "LPC_1978" ? "1978 TMS5100" : (audio.voiceMode === "CURSED" ? "CURSED WRONG" : "SYSTEM TTS");
+      voiceDisplay.textContent = isCursed ? "BENT TMC0280" : "1978 TMC0280";
     }
   }
 
@@ -139,10 +139,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Click & Touch Handlers for all membrane buttons
+  // Click & Touch Handlers for all membrane buttons with mobile ghost-click prevention
   const keys = document.querySelectorAll(".key");
   keys.forEach((keyBtn) => {
     const keyName = keyBtn.dataset.key;
+    let isTouch = false;
 
     const pressHandler = (e) => {
       e.preventDefault();
@@ -159,23 +160,33 @@ document.addEventListener("DOMContentLoaded", () => {
       keyBtn.classList.remove("pressed");
     };
 
-    keyBtn.addEventListener("mousedown", pressHandler);
-    keyBtn.addEventListener("mouseup", releaseHandler);
-    keyBtn.addEventListener("mouseleave", releaseHandler);
+    keyBtn.addEventListener("touchstart", (e) => {
+      isTouch = true;
+      pressHandler(e);
+    }, { passive: false });
 
-    keyBtn.addEventListener("touchstart", pressHandler, { passive: false });
     keyBtn.addEventListener("touchend", releaseHandler);
     keyBtn.addEventListener("touchcancel", releaseHandler);
+
+    keyBtn.addEventListener("mousedown", (e) => {
+      if (isTouch) {
+        isTouch = false;
+        return;
+      }
+      pressHandler(e);
+    });
+    keyBtn.addEventListener("mouseup", releaseHandler);
+    keyBtn.addEventListener("mouseleave", releaseHandler);
   });
 
-  // Physical Computer Keyboard Integration
+  // Physical Computer Keyboard Integration (Supports A-Z, 0-9, Enter, Backspace, Space, Esc)
   window.addEventListener("keydown", (e) => {
-    if (e.target.tagName === "INPUT") return;
+    if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
 
     const key = e.key;
     let targetKeyName = null;
 
-    if (/^[a-zA-Z']$/.test(key)) {
+    if (/^[a-zA-Z0-9']$/.test(key)) {
       targetKeyName = key.toUpperCase();
     } else if (key === "Enter") {
       targetKeyName = "ENTER";

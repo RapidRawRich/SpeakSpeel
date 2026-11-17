@@ -134,12 +134,29 @@
         await new Promise(r => setTimeout(r, 150));
         assert(win.speakSpell.engine.currentMode === "SECRET_CODE", "Switched to SECRET CODE mode");
 
+        // Test 9b: Secret code input & cipher ERASE protection
+        const cKey = doc.querySelector('.key[data-key="C"]');
+        cKey.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        cKey.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 80));
+        assert(win.speakSpell.display.text.trim() === "F", "Secret Code encodes 'C' to 'F' on VFD");
+
+        const eraseKey = doc.querySelector('.key[data-key="ERASE"]');
+        eraseKey.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+        eraseKey.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+        await new Promise(r => setTimeout(r, 80));
+        assert(win.speakSpell.display.text.startsWith("CODE"), "Erasing in Secret Code preserves cipher display state");
+
         // Test 10: Mode switching: LETTER mode
         const letterBtn = doc.querySelector('.key[data-key="LETTER"]');
         letterBtn.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
         letterBtn.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
         await new Promise(r => setTimeout(r, 150));
         assert(win.speakSpell.engine.currentMode === "LETTER", "Switched to LETTER mode");
+
+        // Test 10b: Digits / phonetics handling in LETTER mode
+        win.speakSpell.engine.handleKey("5");
+        assert(win.speakSpell.display.text.startsWith("5"), "Digit '5' registered and rendered in LETTER mode");
 
         // Test 11: Level module cycling including Roast R
         const levelBtn = doc.querySelector('.key[data-key="LEVEL"]');

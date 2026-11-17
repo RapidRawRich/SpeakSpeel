@@ -19,12 +19,10 @@ class SpeakSpellAudio {
     this.volume = 0.8;
     this.pitchRate = 1.0; // Circuit bend pitch factor (0.4 to 2.2)
     
-    // Voice Mode: 'LPC_1978' (Authentic Mitch Carr TMS5100), 'CURSED' (Wrong/demonic), 'SYSTEM' (SpeechSynthesis)
+    // Voice Mode: Exclusively 1978 Texas Instruments TMC0280 / TMS5100 LPC-10 Silicon Engine
     this.voiceMode = "LPC_1978";
     this.isCursedVoice = false;
     this.isMuted = false;
-    this.speechSynth = typeof window !== "undefined" ? window.speechSynthesis : null;
-    this.roboticVoice = null;
     this.isSpeaking = false;
 
     // Authentic 1978 TMS5100 Mitch Carr hardware sample caches & audio element fallbacks
@@ -636,9 +634,9 @@ class SpeakSpellAudio {
       return;
     }
 
-    // 4. "SPELL <WORD>" prompt
-    if (upper.startsWith("SPELL ")) {
-      const remainder = upper.slice(6).trim();
+    // 4. "SPELL <WORD>" and "NOW SPELL <WORD>" prompts
+    if (upper.startsWith("SPELL ") || upper.startsWith("NOW SPELL ") || upper.includes("SPELL ")) {
+      const remainder = upper.replace(/^.*SPELL\s+/, "").trim();
       await this.playSample("SPELL");
       await new Promise(r => setTimeout(r, 140 / this.pitchRate));
 
@@ -722,8 +720,9 @@ class SpeakSpellAudio {
 
   /**
    * Speak entry point:
-   * By default, uses the authentic 1978 TMS5100 LPC-10 hardware voice (Mitch Carr),
-   * with fallback to Cursed Glitch demonic mode or SpeechSynthesis.
+   * Pure 1978 Texas Instruments TMC0280 / TMS5100 LPC-10 Speech Synthesis.
+   * Dispatches authentic Mitch Carr ROM captures with circuit bending,
+   * with seamless fallback to procedural 10-pole lattice formant synthesis.
    */
   speak(text, options = {}) {
     return new Promise(async (resolve) => {
@@ -736,23 +735,15 @@ class SpeakSpellAudio {
 
       // Headless test environment detection
       if (typeof window !== "undefined" && (window.IS_TEST_ENV || navigator.webdriver)) {
-        setTimeout(resolve, 40);
+        setTimeout(resolve, 30);
         return;
       }
 
       this.isSpeaking = true;
 
       try {
-        if (this.voiceMode === "LPC_1978") {
-          // Exact 1978 Mitch Carr TMS5100 hardware voice synthesis
-          await this.speakAuthenticTMS5100(cleanText, options);
-        } else if (this.voiceMode === "CURSED") {
-          // Cursed demonic circuit-bent voice
-          await this.speakCursed(cleanText, options);
-        } else {
-          // System SpeechSynthesis
-          await this.speakSystem(cleanText, options);
-        }
+        // Exclusively 1978 TMC0280 / TMS5100 LPC-10 speech synthesis
+        await this.speakAuthenticTMS5100(cleanText, options);
       } catch (err) {
         console.warn("[SpeakSpellAudio] Speech error:", err);
       } finally {
@@ -927,56 +918,21 @@ class SpeakSpellAudio {
   }
 
   /**
-   * Cursed demonic speech
+   * Cursed Demonic Speech:
+   * Pure circuit-bent TMC0280 / TMS5100 LPC-10 with low-frequency glottal sub-pitch
+   * and WaveShaper distortion (no generic TTS).
    */
   async speakCursed(text, options = {}) {
-    if (this.speechSynth) {
-      return new Promise((resolve) => {
-        this.speechSynth.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (this.roboticVoice) utterance.voice = this.roboticVoice;
-        utterance.pitch = Math.max(0.1, 0.14 * this.pitchRate); // Demonic ultra-low gargle
-        utterance.rate = Math.max(0.4, 0.65 * this.pitchRate);
-        utterance.volume = this.volume;
-
-        utterance.onend = resolve;
-        utterance.onerror = () => {
-          this.synthesizeTMS5100(text, options).then(resolve);
-        };
-        this.speechSynth.speak(utterance);
-        setTimeout(resolve, Math.max(2000, text.length * 300));
-      });
-    } else {
-      return this.synthesizeTMS5100(text, options);
-    }
-  }
-
-  /**
-   * System SpeechSynthesis fallback
-   */
-  async speakSystem(text, options = {}) {
-    if (this.speechSynth) {
-      return new Promise((resolve) => {
-        this.speechSynth.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (this.roboticVoice) utterance.voice = this.roboticVoice;
-        utterance.pitch = Math.max(0.3, 0.75 * this.pitchRate);
-        utterance.rate = Math.max(0.5, 0.85 * this.pitchRate);
-        utterance.volume = this.volume;
-        utterance.onend = resolve;
-        utterance.onerror = resolve;
-        this.speechSynth.speak(utterance);
-        setTimeout(resolve, Math.max(1500, text.length * 200));
-      });
-    } else {
-      return this.synthesizeTMS5100(text, options);
+    const wasCursed = this.isCursedVoice;
+    this.isCursedVoice = true;
+    try {
+      await this.speakAuthenticTMS5100(text, options);
+    } finally {
+      this.isCursedVoice = wasCursed;
     }
   }
 
   stopAll() {
-    if (this.speechSynth) {
-      this.speechSynth.cancel();
-    }
     this.isSpeaking = false;
   }
 }
