@@ -49,23 +49,18 @@ Validates word lengths, dictionary integrity, cipher reciprocity, 14-segment gly
 
 ## 🌐 Deploying to GitHub Pages
 
-The repository is already configured with a `.nojekyll` file, PWA manifest, SVG favicon, and an automated GitHub Actions deployment workflow ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)).
+The repository is configured with a `.nojekyll` file, PWA manifest, and SVG favicon for instant GitHub Pages deployment.
 
-When Microsoft / GitHub services are restored:
-
-1. **Create a new repository on GitHub** (e.g. `speak-spell` or `SpeakSpeel`).
-2. **Add the remote and push**:
+1. **Push to main**:
    ```bash
-   git remote add origin https://github.com/<YOUR_GITHUB_USERNAME>/<YOUR_REPO_NAME>.git
    git push -u origin main
    ```
-3. **Enable GitHub Pages**:
-   - Go to your repository on GitHub $\to$ **Settings** $\to$ **Pages**.
+2. **GitHub Pages Source**:
+   - In GitHub $\to$ **Settings** $\to$ **Pages**.
    - Under **Build and deployment** $\to$ **Source**:
-     - Select **GitHub Actions** (recommended — automatically triggers the workflow which runs test verification before deploying), **OR**
      - Select **Deploy from a branch** $\to$ Branch: `main` $\to$ `/ (root)`.
-4. Your Speak & Spell emulator will be live at:
-   `https://<YOUR_GITHUB_USERNAME>.github.io/<YOUR_REPO_NAME>/`
+3. Your Speak & Spell emulator is live at:
+   `https://RapidRawRich.github.io/SpeakSpeel/`
 
 ---
 

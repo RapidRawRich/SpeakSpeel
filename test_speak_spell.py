@@ -87,8 +87,7 @@ class TestWebAssets(unittest.TestCase):
             "js/app.js",
             ".nojekyll",
             "manifest.json",
-            "assets/icon.svg",
-            ".github/workflows/deploy.yml"
+            "assets/icon.svg"
         ]
         for f in expected_files:
             p = os.path.join(BASE_DIR, f)
