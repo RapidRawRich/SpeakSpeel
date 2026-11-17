@@ -1,7 +1,7 @@
 /**
  * Main Application Orchestrator
  * Connects the VFD display, TMS5100 LPC sound synthesizer, Speak & Spell game engine,
- * and handles UI clicks, touch events, and physical keyboard inputs.
+ * and handles UI clicks, touch events, physical keyboard inputs, and Roast Mode.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,13 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const bendDisplay = document.getElementById("bend-display");
   const volSlider = document.getElementById("volume-slider");
   const volDisplay = document.getElementById("vol-display");
+  const roastToggleBtn = document.getElementById("roast-toggle-btn");
+  const roastIndicator = document.getElementById("roast-indicator");
 
   // Level Badges
   const levelBadges = {
     A: document.getElementById("badge-A"),
     B: document.getElementById("badge-B"),
     C: document.getElementById("badge-C"),
-    D: document.getElementById("badge-D")
+    D: document.getElementById("badge-D"),
+    R: document.getElementById("badge-R")
   };
 
   // Initialize components
@@ -37,12 +40,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Sync Roast Mode UI
+  function updateRoastUI() {
+    const isRoast = engine.isRoastMode;
+    if (roastIndicator) {
+      roastIndicator.textContent = isRoast ? "ACTIVE" : "OFF";
+      if (isRoast) {
+        roastIndicator.classList.add("on");
+      } else {
+        roastIndicator.classList.remove("on");
+      }
+    }
+    if (roastToggleBtn) {
+      if (isRoast) {
+        roastToggleBtn.classList.add("active");
+        roastToggleBtn.textContent = "🔥 ROAST ACTIVE";
+      } else {
+        roastToggleBtn.classList.remove("active");
+        roastToggleBtn.textContent = "🔥 ROAST MODE";
+      }
+    }
+    const roastKey = document.querySelector('.key[data-key="ROAST"]');
+    if (roastKey) {
+      if (isRoast) {
+        roastKey.classList.add("active-roast");
+      } else {
+        roastKey.classList.remove("active-roast");
+      }
+    }
+  }
+
   // Hook into engine cycleLevel to sync badge
   const origCycleLevel = engine.cycleLevel.bind(engine);
   engine.cycleLevel = function() {
     origCycleLevel();
     updateLevelBadges();
   };
+
+  // Hook into engine toggleRoastMode to sync UI
+  const origToggleRoast = engine.toggleRoastMode.bind(engine);
+  engine.toggleRoastMode = function() {
+    origToggleRoast();
+    updateRoastUI();
+    updateLevelBadges();
+  };
+
+  // Toggle button event listener
+  if (roastToggleBtn) {
+    roastToggleBtn.addEventListener("click", () => {
+      engine.toggleRoastMode();
+    });
+  }
 
   // Click & Touch Handlers for all membrane buttons
   const keys = document.querySelectorAll(".key");
@@ -53,8 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       keyBtn.classList.add("pressed");
 
-      if (keyName === "DEMO") {
-        playDemoSequence();
+      if (keyName === "ROAST") {
+        engine.toggleRoastMode();
       } else {
         engine.handleKey(keyName);
       }
@@ -124,20 +172,6 @@ document.addEventListener("DOMContentLoaded", () => {
         volDisplay.textContent = `${Math.round(val * 100)}%`;
       }
     });
-  }
-
-  // Demo Voice / Jingle sequence
-  async function playDemoSequence() {
-    if (!engine.isPowerOn) {
-      engine.powerOn();
-      return;
-    }
-    audio.ensureAudio();
-    display.render("DEMO    ", 0);
-    await audio.playVictoryFanfare();
-    await audio.speak("TEXAS INSTRUMENTS SPEAK AND SPELL");
-    await audio.speak("THAT IS CORRECT. YOU WIN!");
-    display.render("SPELL   ", 0);
   }
 
   // Power on automatically with gentle prompt

@@ -314,6 +314,13 @@ body {
   box-shadow: 0 0 8px rgba(248, 180, 23, 0.6);
 }
 
+.level-badge.level-badge-roast.active {
+  background: #ff3b30;
+  color: #ffffff;
+  border-color: #ff9f0a;
+  box-shadow: 0 0 10px rgba(255, 59, 48, 0.85);
+}
+
 /* ==========================================================================
    Membrane Keypad
    ========================================================================== */
@@ -421,6 +428,18 @@ body {
   background: linear-gradient(to bottom, #3b74b8, #1e4b85);
 }
 
+.key-roast {
+  background: linear-gradient(to bottom, #e03126, #9c150e);
+  color: #fffae0;
+  border-color: #630803;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+
+.key-roast.active-roast {
+  box-shadow: 0 0 10px rgba(255, 60, 40, 0.9), inset 0 1px 3px rgba(255, 255, 255, 0.6);
+}
+
 /* ==========================================================================
    Circuit Bending & Extra Controls Drawer
    ========================================================================== */
@@ -477,6 +496,44 @@ body {
   cursor: pointer;
   border: 2px solid #573e04;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Roast Switch Toggle Button */
+.roast-status {
+  font-weight: 800;
+  color: #8c8c8c;
+  transition: color 0.2s ease;
+}
+
+.roast-status.on {
+  color: #ff3b30;
+  text-shadow: 0 0 6px rgba(255, 59, 48, 0.8);
+}
+
+.roast-switch-btn {
+  background: linear-gradient(to bottom, #2c1a17, #180b09);
+  color: #ffb4a8;
+  border: 2px solid #521c16;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.roast-switch-btn:hover {
+  background: linear-gradient(to bottom, #3d211c, #260e0a);
+  border-color: #80281e;
+}
+
+.roast-switch-btn.active {
+  background: linear-gradient(to bottom, #d62f23, #8c160e);
+  color: #ffffff;
+  border-color: #ff8c7e;
+  box-shadow: 0 0 12px rgba(255, 50, 30, 0.75), inset 0 1px 2px rgba(255, 255, 255, 0.4);
 }
 
 /* Keyboard hint info */

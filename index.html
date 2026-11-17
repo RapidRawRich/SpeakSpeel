@@ -65,6 +65,7 @@
             <span class="level-badge" id="badge-B">B</span>
             <span class="level-badge" id="badge-C">C</span>
             <span class="level-badge" id="badge-D">D</span>
+            <span class="level-badge level-badge-roast" id="badge-R" title="Roast Edition">R</span>
           </div>
         </div>
       </section>
@@ -124,7 +125,7 @@
           <button class="key key-action key-repeat" data-key="REPEAT" aria-label="Repeat">REPEAT</button>
           <button class="key key-action key-enter" data-key="ENTER" aria-label="Enter">ENTER</button>
           <button class="key key-module" data-key="LEVEL" aria-label="Level Select">LEVEL</button>
-          <button class="key key-action key-repeat" data-key="DEMO" aria-label="Demo Voice">DEMO</button>
+          <button class="key key-action key-roast" data-key="ROAST" aria-label="Toggle Roast Mode">ROAST</button>
         </div>
       </section>
 
@@ -144,6 +145,14 @@
             <span class="bend-value" id="vol-display">80%</span>
           </label>
           <input type="range" id="volume-slider" class="slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume Slider">
+        </div>
+
+        <div class="control-group control-roast-group">
+          <label class="control-label">
+            <span>SASS / ROAST</span>
+            <span class="roast-status" id="roast-indicator">OFF</span>
+          </label>
+          <button id="roast-toggle-btn" class="roast-switch-btn" type="button" aria-label="Toggle Offensive Roast Mode">🔥 ROAST MODE</button>
         </div>
       </section>
 

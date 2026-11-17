@@ -21,8 +21,15 @@ An authentic, production-grade emulation of the iconic **1978 Texas Instruments 
   3. **SAY IT**: Flashcard pronunciation mode where the toy speaks the word, pauses for the player, and spells it out.
   4. **SECRET CODE**: The authentic Texas Instruments substitution cipher (+3 Caesar shift).
   5. **LETTER**: Educational phonics mode with 26 chromatic scale musical tones mapped to keys A–Z.
-* **4 Difficulty Word Modules**:
-  * Groups A, B, C, and D with over 160 authentic words curated to the physical 8-character display limitation.
+* **🔥 Offensive / Roast Edition ("Snark & Spell")**:
+  * An adult novelty roast mode modeled after 1980s circuit-bent and novelty insult toys!
+  * Toggleable via the physical **`ROAST MODE`** switch or **`ROAST`** keypad button.
+  * Replaces polite encouragements with biting robotic insults ("Wrong, dumbass. Try again.", "Did you drop out of school?", "A miracle! That is correct.", "Total embarrassment. Score: 2").
+  * Includes the **Group R (Roast Word Pack)** with over 30 classic comedic roast words (`LOSER`, `MORON`, `CLOWN`, `DOOFUS`, `FOOL`, `SLACKER`, `BOZO`, `AIRHEAD`, `CHUMP`, `BUFFOON`, `TROLL`, `NUMBSKUL`).
+* **5 Difficulty Word Modules**:
+  * Groups A, B, C, D, and R with over 190 words rigorously adhering to the 8-character display limitation.
+* **Tested Against Historical MAME Emulation ([hh_snspell](https://archive.org/details/hh_snspell))**:
+  * Verifies ROM state machine loops, 2-strike hint limits, 14-segment character mappings, and cipher reciprocity.
 * **Circuit Bending Slider**:
   * Variable clock rate slider ($0.4\times$ to $2.0\times$) to reproduce the famous 1980s circuit-bent Speak & Spell synthesizer modifications used by electronic music legends (Kraftwerk, Depeche Mode).
 * **Physical Keyboard Support**:

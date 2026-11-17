@@ -6,7 +6,8 @@
  * - SAY IT (Spoken pronunciation and spelling reveal)
  * - SECRET CODE (Caesar cipher substitution encoder/decoder)
  * - LETTER (Phonetics and 26-tone musical scale)
- * - MODULE / LEVEL (Difficulty Groups A, B, C, D)
+ * - MODULE / LEVEL (Difficulty Groups A, B, C, D, and R)
+ * Plus the hilarious, retro-styled ROAST / OFFENSIVE novelty edition!
  */
 
 class SpeakSpellEngine {
@@ -17,8 +18,9 @@ class SpeakSpellEngine {
 
     // Power & Mode States
     this.isPowerOn = false;
+    this.isRoastMode = false;
     this.currentMode = "SPELL"; // 'SPELL', 'MYSTERY', 'SAY_IT', 'SECRET_CODE', 'LETTER'
-    this.currentLevel = "A"; // 'A', 'B', 'C', 'D'
+    this.currentLevel = "A"; // 'A', 'B', 'C', 'D', 'R'
 
     // SPELL Mode State
     this.spellRound = 0;
@@ -56,6 +58,9 @@ class SpeakSpellEngine {
     this.display.render("SPELL   ", 0);
     this.display.flash(2, 100, async () => {
       await this.audio.playVictoryFanfare();
+      if (this.isRoastMode) {
+        await this.audio.speak(this.words.ROAST_PHRASES.BOOT);
+      }
       this.isBusy = false;
       this.startSpellMode();
     });
@@ -71,18 +76,40 @@ class SpeakSpellEngine {
   }
 
   /**
+   * Toggle Roast / Offensive Mode
+   */
+  toggleRoastMode() {
+    if (!this.isPowerOn || this.isBusy) return;
+    this.isRoastMode = !this.isRoastMode;
+    this.audio.playKeyClick();
+
+    if (this.isRoastMode) {
+      this.display.render("ROAST ON", -1);
+      this.audio.speak("ROAST MODE ACTIVATED. PREPARE FOR TRUTH.").then(() => {
+        this.setMode(this.currentMode);
+      });
+    } else {
+      this.display.render("ROASTOFF", -1);
+      this.audio.speak("POLITE MODE RESTORED.").then(() => {
+        this.setMode(this.currentMode);
+      });
+    }
+  }
+
+  /**
    * Difficulty Group / Cartridge Selection
    */
   cycleLevel() {
     if (!this.isPowerOn || this.isBusy) return;
-    const levels = ["A", "B", "C", "D"];
+    const levels = ["A", "B", "C", "D", "R"];
     const currIdx = levels.indexOf(this.currentLevel);
     this.currentLevel = levels[(currIdx + 1) % levels.length];
 
-    this.display.render(`GROUP  ${this.currentLevel}`, -1);
+    const label = this.currentLevel === "R" ? "ROAST   " : `GROUP  ${this.currentLevel}`;
+    this.display.render(label, -1);
     this.audio.playKeyClick();
-    this.audio.speak(`Group ${this.currentLevel}`).then(() => {
-      // Restart current mode in new level
+    const spoken = this.currentLevel === "R" ? "Roast Expansion Pack" : `Group ${this.currentLevel}`;
+    this.audio.speak(spoken).then(() => {
       this.setMode(this.currentMode);
     });
   }
@@ -146,9 +173,16 @@ class SpeakSpellEngine {
     this.inputBuffer = "";
     this.display.render("", 0);
 
-    const promptText = (this.spellRound === 0) 
-      ? `SPELL ${this.spellCurrentWord}` 
-      : `NOW SPELL ${this.spellCurrentWord}`;
+    let promptText;
+    if (this.isRoastMode) {
+      const prompts = this.words.ROAST_PHRASES.PROMPTS;
+      const tmpl = prompts[Math.floor(Math.random() * prompts.length)];
+      promptText = tmpl.replace("%s", this.spellCurrentWord);
+    } else {
+      promptText = (this.spellRound === 0) 
+        ? `SPELL ${this.spellCurrentWord}` 
+        : `NOW SPELL ${this.spellCurrentWord}`;
+    }
 
     await this.audio.speak(promptText);
     this.display.render("_       ", 0);
@@ -169,7 +203,15 @@ class SpeakSpellEngine {
       this.display.render(this.spellCurrentWord, -1);
       this.display.flash(2, 90);
       await this.audio.playVictoryFanfare();
-      await this.audio.speak("THAT IS CORRECT");
+
+      let praise;
+      if (this.isRoastMode) {
+        const correctList = this.words.ROAST_PHRASES.CORRECT;
+        praise = correctList[Math.floor(Math.random() * correctList.length)];
+      } else {
+        praise = "THAT IS CORRECT";
+      }
+      await this.audio.speak(praise);
 
       this.spellRound++;
       this.isBusy = false;
@@ -184,17 +226,34 @@ class SpeakSpellEngine {
         this.spellAttempt = 2;
         this.inputBuffer = "";
         this.display.render("_       ", 0);
-        await this.audio.speak("WRONG. TRY AGAIN.");
+
+        let insult;
+        if (this.isRoastMode) {
+          const list = this.words.ROAST_PHRASES.WRONG_1;
+          insult = list[Math.floor(Math.random() * list.length)];
+        } else {
+          insult = "WRONG. TRY AGAIN.";
+        }
+        await this.audio.speak(insult);
         this.isBusy = false;
       } else {
         // Second miss: reveal answer
         this.display.render(this.spellCurrentWord, -1);
-        await this.audio.speak(
-          `THAT IS INCORRECT. THE CORRECT SPELLING OF ${this.spellCurrentWord} IS`,
-          { spellOut: false }
-        );
-        // Spell out the word letter-by-letter
-        await this.audio.speak(this.spellCurrentWord, { spellOut: true });
+
+        if (this.isRoastMode) {
+          const list = this.words.ROAST_PHRASES.WRONG_2;
+          const tmpl = list[Math.floor(Math.random() * list.length)];
+          const spelledOut = this.spellCurrentWord.split("").join(" . ");
+          const roastMsg = tmpl.replace("%s", this.spellCurrentWord).replace("%s", spelledOut);
+          await this.audio.speak(roastMsg);
+        } else {
+          await this.audio.speak(
+            `THAT IS INCORRECT. THE CORRECT SPELLING OF ${this.spellCurrentWord} IS`,
+            { spellOut: false }
+          );
+          // Spell out the word letter-by-letter
+          await this.audio.speak(this.spellCurrentWord, { spellOut: true });
+        }
 
         this.spellRound++;
         this.isBusy = false;
@@ -209,14 +268,26 @@ class SpeakSpellEngine {
     const scoreStr = `SCORE ${finalScore}`;
     this.display.render(scoreStr, -1);
 
-    if (finalScore === 10) {
-      await this.audio.playVictoryFanfare();
-      await this.audio.speak("YOU WIN! PERFECT SCORE!");
-    } else if (finalScore >= 6) {
-      await this.audio.playVictoryFanfare();
-      await this.audio.speak(`YOUR SCORE IS ${finalScore} OUT OF 10. GOOD JOB!`);
+    if (this.isRoastMode) {
+      if (finalScore === 10) {
+        await this.audio.playVictoryFanfare();
+        await this.audio.speak(this.words.ROAST_PHRASES.PERFECT_SCORE);
+      } else if (finalScore >= 6) {
+        await this.audio.playVictoryFanfare();
+        await this.audio.speak(this.words.ROAST_PHRASES.GOOD_SCORE.replace("%d", finalScore));
+      } else {
+        await this.audio.speak(this.words.ROAST_PHRASES.BAD_SCORE.replace("%d", finalScore));
+      }
     } else {
-      await this.audio.speak(`NEXT TIME, WRITE IT DOWN! YOUR SCORE IS ${finalScore}`);
+      if (finalScore === 10) {
+        await this.audio.playVictoryFanfare();
+        await this.audio.speak("YOU WIN! PERFECT SCORE!");
+      } else if (finalScore >= 6) {
+        await this.audio.playVictoryFanfare();
+        await this.audio.speak(`YOUR SCORE IS ${finalScore} OUT OF 10. GOOD JOB!`);
+      } else {
+        await this.audio.speak(`NEXT TIME, WRITE IT DOWN! YOUR SCORE IS ${finalScore}`);
+      }
     }
 
     this.isBusy = false;
@@ -236,7 +307,11 @@ class SpeakSpellEngine {
     this.mysteryWord = pool[Math.floor(Math.random() * pool.length)];
 
     this.display.render("MYSTERY ", -1);
-    this.audio.speak("MYSTERY WORD. GUESS A LETTER.").then(() => {
+    const prompt = this.isRoastMode 
+      ? this.words.ROAST_PHRASES.MYSTERY_PROMPT 
+      : "MYSTERY WORD. GUESS A LETTER.";
+
+    this.audio.speak(prompt).then(() => {
       this.renderMysteryDisplay();
       this.isBusy = false;
     });
@@ -276,7 +351,10 @@ class SpeakSpellEngine {
       if (isComplete) {
         this.display.flash(2, 90);
         await this.audio.playVictoryFanfare();
-        await this.audio.speak(`YOU WIN! THE MYSTERY WORD IS ${this.mysteryWord}`);
+        const msg = this.isRoastMode
+          ? this.words.ROAST_PHRASES.MYSTERY_WIN.replace("%s", this.mysteryWord)
+          : `YOU WIN! THE MYSTERY WORD IS ${this.mysteryWord}`;
+        await this.audio.speak(msg);
         this.isBusy = false;
         return;
       }
@@ -286,11 +364,19 @@ class SpeakSpellEngine {
 
       if (this.mysteryStrikes >= this.mysteryMaxStrikes) {
         this.display.render(this.mysteryWord, -1);
-        await this.audio.speak(`THAT IS INCORRECT. THE MYSTERY WORD IS ${this.mysteryWord}`);
+        const msg = this.isRoastMode
+          ? this.words.ROAST_PHRASES.MYSTERY_LOSE.replace("%s", this.mysteryWord)
+          : `THAT IS INCORRECT. THE MYSTERY WORD IS ${this.mysteryWord}`;
+        await this.audio.speak(msg);
         this.isBusy = false;
         return;
       } else {
-        await this.audio.speak(`WRONG. ${this.mysteryMaxStrikes - this.mysteryStrikes} CHANCES LEFT.`);
+        if (this.isRoastMode) {
+          const list = this.words.ROAST_PHRASES.MYSTERY_WRONG;
+          await this.audio.speak(list[Math.floor(Math.random() * list.length)]);
+        } else {
+          await this.audio.speak(`WRONG. ${this.mysteryMaxStrikes - this.mysteryStrikes} CHANCES LEFT.`);
+        }
       }
     }
 
@@ -312,9 +398,10 @@ class SpeakSpellEngine {
     this.isBusy = true;
 
     this.display.render(this.sayItWord, -1);
-    await this.audio.speak(`SAY IT. ${this.sayItWord}`);
+    const prefix = this.isRoastMode ? "SAY IT, IF YOU CAN. " : "SAY IT. ";
+    await this.audio.speak(`${prefix}${this.sayItWord}`);
 
-    // Wait 2.5 seconds to allow player to speak
+    // Wait 2.2 seconds to allow player to speak
     await new Promise((res) => setTimeout(res, 2200));
 
     // Pronounce again and spell it out
@@ -332,7 +419,7 @@ class SpeakSpellEngine {
     this.currentMode = "SECRET_CODE";
     this.inputBuffer = "";
     this.display.render("CODE    ", 0);
-    this.audio.speak("SECRET CODE");
+    this.audio.speak(this.isRoastMode ? "SECRET CODE. TOO COMPLEX FOR YOU." : "SECRET CODE");
   }
 
   handleSecretCodeInput(letter) {
@@ -363,7 +450,7 @@ class SpeakSpellEngine {
     this.currentMode = "LETTER";
     this.inputBuffer = "";
     this.display.render("LETTER  ", -1);
-    this.audio.speak("PRESS A LETTER");
+    this.audio.speak(this.isRoastMode ? "TRY TO IDENTIFY A LETTER." : "PRESS A LETTER");
   }
 
   handleLetterModeInput(letter) {
@@ -383,7 +470,7 @@ class SpeakSpellEngine {
 
     const upperKey = keyName.toUpperCase();
 
-    // Mode Buttons
+    // Power Buttons
     if (upperKey === "ON") {
       this.powerOn();
       return;
@@ -392,6 +479,14 @@ class SpeakSpellEngine {
       this.powerOff();
       return;
     }
+
+    // Roast Mode Toggle
+    if (upperKey === "ROAST" || upperKey === "ROAST_MODE" || upperKey === "SASS") {
+      this.toggleRoastMode();
+      return;
+    }
+
+    // Mode Buttons
     if (upperKey === "SPELL") {
       this.setMode("SPELL");
       return;
@@ -476,10 +571,11 @@ class SpeakSpellEngine {
 
     if (this.currentMode === "SPELL") {
       if (this.spellCurrentWord) {
-        this.audio.speak(`SPELL ${this.spellCurrentWord}`);
+        const text = this.isRoastMode ? `PAY ATTENTION. SPELL ${this.spellCurrentWord}` : `SPELL ${this.spellCurrentWord}`;
+        this.audio.speak(text);
       }
     } else if (this.currentMode === "MYSTERY") {
-      this.audio.speak("MYSTERY WORD. GUESS A LETTER.");
+      this.audio.speak(this.isRoastMode ? "HURRY UP AND GUESS A LETTER." : "MYSTERY WORD. GUESS A LETTER.");
     } else if (this.currentMode === "SAY_IT") {
       if (this.sayItWord) {
         this.audio.speak(this.sayItWord);
